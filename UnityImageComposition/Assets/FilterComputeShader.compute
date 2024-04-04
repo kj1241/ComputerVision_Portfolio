@@ -1,0 +1,215 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+//#pragma kernel CSMain
+//
+//Texture2D<float4> InputTexture;
+//RWTexture2D<float4> ResultTexture;
+//
+//[numthreads(8, 8, 1)]
+//void CSMain(uint3 id : SV_DispatchThreadID) {
+//    float4 color = InputTexture[id.xy];
+//
+//    float gray = dot(color.rgb, float3(0.299, 0.587, 0.114));
+//    ResultTexture[id.xy] = float4(gray, gray, gray, color.a);
+//}
+
+//#pragma kernel CSMain
+//
+//Texture2D<float4> InputTexture;
+//RWTexture2D<float4> ResultTexture;
+//
+//[numthreads(8, 8, 1)]
+//void CSMain(uint3 id : SV_DispatchThreadID) {
+//    int2 texCoord = int2(id.xy);
+//
+//    float4 centerPixel = InputTexture[texCoord + int2(0, 0)];
+//
+//    float4 topPixel = InputTexture[texCoord + int2(0, -1)];
+//    float4 bottomPixel = InputTexture[texCoord + int2(0, 1)];
+//    float4 leftPixel = InputTexture[texCoord + int2(-1, 0)];
+//    float4 rightPixel = InputTexture[texCoord + int2(1, 0)];
+//
+//    float4 result = 5.0 * centerPixel - (topPixel + bottomPixel + leftPixel + rightPixel);
+//
+//    ResultTexture[texCoord] = result;
+//}
+
+
+
+//#pragma kernel CSMain
+//
+//Texture2D<float4> InputTexture;
+//RWTexture2D<float4> ResultTexture;
+//
+//[numthreads(8, 8, 1)]
+//void CSMain(uint3 id : SV_DispatchThreadID) {
+//    int2 texCoord = int2(id.xy);
+//
+//    // Sobel Edge Detection Filter
+//    float4 topLeft = InputTexture[texCoord + int2(-1, -1)];
+//    float4 topCenter = InputTexture[texCoord + int2(0, -1)];
+//    float4 topRight = InputTexture[texCoord + int2(1, -1)];
+//
+//    float4 centerLeft = InputTexture[texCoord + int2(-1, 0)];
+//    float4 centerRight = InputTexture[texCoord + int2(1, 0)];
+//
+//    float4 bottomLeft = InputTexture[texCoord + int2(-1, 1)];
+//    float4 bottomCenter = InputTexture[texCoord + int2(0, 1)];
+//    float4 bottomRight = InputTexture[texCoord + int2(1, 1)];
+//
+//    float4 gx = -topLeft - 2 * centerLeft - bottomLeft + topRight + 2 * centerRight + bottomRight;
+//    float4 gy = -topLeft - 2 * topCenter - topRight + bottomLeft + 2 * bottomCenter + bottomRight;
+//
+//    float4 result = sqrt(gx * gx + gy * gy);
+//
+//    ResultTexture[texCoord] = result;
+//}
+
+
+//#pragma kernel CSMain
+//
+//Texture2D<float4> InputTexture;
+//RWTexture2D<float4> ResultTexture;
+//
+//[numthreads(8, 8, 1)]
+//void CSMain(uint3 id : SV_DispatchThreadID) {
+//    int2 texCoord = int2(id.xy);
+//
+//    // Prewitt Edge Detection Filter
+//    float4 topLeft = InputTexture[texCoord + int2(-1, -1)];
+//    float4 topCenter = InputTexture[texCoord + int2(0, -1)];
+//    float4 topRight = InputTexture[texCoord + int2(1, -1)];
+//
+//    float4 bottomLeft = InputTexture[texCoord + int2(-1, 1)];
+//    float4 bottomCenter = InputTexture[texCoord + int2(0, 1)];
+//    float4 bottomRight = InputTexture[texCoord + int2(1, 1)];
+//
+//    float4 gx = -topLeft - topCenter - topRight + bottomLeft + bottomCenter + bottomRight;
+//    float4 gy = -topLeft - bottomLeft + topRight + bottomRight;
+//
+//    float4 result = sqrt(gx * gx + gy * gy);
+//
+//    ResultTexture[texCoord] = result;
+//}
+
+//#pragma kernel CSMain
+//
+//Texture2D<float4> InputTexture;
+//RWTexture2D<float4> ResultTexture;
+//
+//[numthreads(8, 8, 1)]
+//void CSMain(uint3 id : SV_DispatchThreadID) {
+//    int2 texCoord = int2(id.xy);
+//
+//    // Embossing Filter
+//    float4 topLeft = InputTexture[texCoord + int2(-1, -1)];
+//    float4 topCenter = InputTexture[texCoord + int2(0, -1)];
+//    float4 topRight = InputTexture[texCoord + int2(1, -1)];
+//
+//    float4 centerLeft = InputTexture[texCoord + int2(-1, 0)];
+//    float4 centerRight = InputTexture[texCoord + int2(1, 0)];
+//
+//    float4 bottomLeft = InputTexture[texCoord + int2(-1, 1)];
+//    float4 bottomCenter = InputTexture[texCoord + int2(0, 1)];
+//    float4 bottomRight = InputTexture[texCoord + int2(1, 1)];
+//
+//    float4 result = 2.0 * centerRight + topRight + bottomRight - 2.0 * centerLeft - topLeft - bottomLeft;
+//
+//    ResultTexture[texCoord] = result;
+//}
+
+
+//#pragma kernel CSMain
+//
+//Texture2D<float4> InputTexture;
+//RWTexture2D<float4> ResultTexture;
+//
+//[numthreads(8, 8, 1)]
+//void CSMain(uint3 id : SV_DispatchThreadID) {
+//    int2 texCoord = int2(id.xy);
+//
+//    // Box (Averaging) Filter
+//    float4 topLeft = InputTexture[texCoord + int2(-1, -1)];
+//    float4 topCenter = InputTexture[texCoord + int2(0, -1)];
+//    float4 topRight = InputTexture[texCoord + int2(1, -1)];
+//
+//    float4 centerLeft = InputTexture[texCoord + int2(-1, 0)];
+//    float4 center = InputTexture[texCoord];
+//    float4 centerRight = InputTexture[texCoord + int2(1, 0)];
+//
+//    float4 bottomLeft = InputTexture[texCoord + int2(-1, 1)];
+//    float4 bottomCenter = InputTexture[texCoord + int2(0, 1)];
+//    float4 bottomRight = InputTexture[texCoord + int2(1, 1)];
+//
+//    float4 result = (topLeft + topCenter + topRight + centerLeft + center + centerRight + bottomLeft + bottomCenter + bottomRight) / 9.0;
+//
+//    ResultTexture[texCoord] = result;
+//}
+
+//#pragma kernel CSMain
+//
+//Texture2D<float4> InputTexture;
+//RWTexture2D<float4> ResultTexture;
+//
+//// Gaussian Weights
+//static const float GaussianWeights[5][5] = {
+//    {1,  4,  7,  4, 1},
+//    {4, 16, 26, 16, 4},
+//    {7, 26, 41, 26, 7},
+//    {4, 16, 26, 16, 4},
+//    {1,  4,  7,  4, 1}
+//};
+//
+//[numthreads(16, 16, 1)]  
+//void CSMain(uint3 id : SV_DispatchThreadID) {
+//    int2 texCoord = int2(id.xy);
+//
+//    // Gaussian Filter
+//    float4 result = float4(0.0, 0.0, 0.0, 0.0);
+//
+//    for (int i = -2; i <= 2; ++i) {
+//        for (int j = -2; j <= 2; ++j) {
+//            float4 pixel = InputTexture[texCoord + int2(i, j)];
+//            float weight = GaussianWeights[i + 2][j + 2];
+//            result += weight*pixel/ 273;
+//        }
+//    }
+//
+//    ResultTexture[texCoord] = result;
+//}
+
+
+#pragma kernel CSMain
+
+Texture2D<float4> InputTexture;
+RWTexture2D<float4> ResultTexture;
+
+// Bilateral Filter Parameters
+static const float sigmaSpace = 2.0;
+static const float sigmaColor = 0.1;
+
+[numthreads(8, 8, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID) {
+    int2 texCoord = int2(id.xy);
+
+    float4 centerPixel = InputTexture[texCoord];
+    float4 result = float4(0, 0, 0, 0);
+    float weightSum = 0;
+
+    for (int i = -1; i <= 1; ++i) {
+        for (int j = -1; j <= 1; ++j) {
+            int2 neighborCoord = texCoord + int2(i, j);
+            float4 neighborPixel = InputTexture[neighborCoord];
+
+            // Compute spatial and color weights
+            float spatialWeight = exp(-(i * i + j * j) / (2 * sigmaSpace * sigmaSpace));
+            float colorWeight = exp(-length(neighborPixel - centerPixel) / (2 * sigmaColor * sigmaColor));
+
+            float weight = spatialWeight * colorWeight;
+            result += neighborPixel * weight;
+            weightSum += weight;
+        }
+    }
+
+    // Normalize the result by the sum of weights
+    ResultTexture[texCoord] = result / weightSum;
+}

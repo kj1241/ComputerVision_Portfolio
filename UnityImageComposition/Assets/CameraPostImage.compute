@@ -1,0 +1,167 @@
+﻿//#pragma kernel CSMain
+//
+//RWTexture2D<float4> InputTexture;
+//RWTexture2D<float4> ResultTexture;
+//
+//[numthreads(8, 8, 1)]
+//void CSMain(uint3 id : SV_DispatchThreadID) {
+//    float4 color = InputTexture[id.xy];
+//
+//    float gray = dot(color.rgb, float3(0.299, 0.587, 0.114));
+//    ResultTexture[id.xy] = float4(gray, gray, gray, color.a);
+//
+//}
+
+
+//#pragma kernel CSMain
+//
+//RWTexture2D<float4> InputTexture;
+//RWTexture2D<float4> ResultTexture;
+//
+//[numthreads(8, 8, 1)]
+//void CSMain(uint3 id : SV_DispatchThreadID) {
+//    int2 texCoord = int2(id.xy);
+//
+//    float4 centerPixel = InputTexture[texCoord + int2(0, 0)];
+//
+//    float4 topPixel = InputTexture[texCoord + int2(0, -1)];
+//    float4 bottomPixel = InputTexture[texCoord + int2(0, 1)];
+//    float4 leftPixel = InputTexture[texCoord + int2(-1, 0)];
+//    float4 rightPixel = InputTexture[texCoord + int2(1, 0)];
+//
+//    float4 result = 5.0 * centerPixel - (topPixel + bottomPixel + leftPixel + rightPixel);
+//
+//    ResultTexture[texCoord] = result;
+//}
+
+
+#pragma kernel CSMain
+
+Texture2D<float4> InputTexture;
+RWTexture2D<float4> ResultTexture;
+float  weight;
+
+[numthreads(8, 8, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID) {
+  
+    int2 texCoord = int2(id.xy);
+    
+    float3x3 sobelX = float3x3(
+        -1, 0, 1,
+        -2, 0, 2,
+        -1, 0, 1
+        );
+
+    float3x3 sobelY = float3x3(
+        -1, -2, -1,
+        0, 0, 0,
+        1, 2, 1
+        );
+
+    float3 pixel = InputTexture[texCoord].rgb;
+    float gray = dot(pixel, float3(0.299, 0.587, 0.114));
+
+
+    float gx = 0.0;
+    for (int i = -1; i <= 1; ++i) {
+        for (int j = -1; j <= 1; ++j) {
+            float3 neighborColor = InputTexture[texCoord + int2(i, j)].rgb;
+            gx += sobelX[i + 1][j + 1] * dot(neighborColor, float3(0.299, 0.587, 0.114));
+        }
+    }
+
+
+    float gy = 0.0;
+    for (int i = -1; i <= 1; ++i) {
+        for (int j = -1; j <= 1; ++j) {
+            float3 neighborColor = InputTexture[texCoord + int2(i, j)].rgb;
+            gy += sobelY[i + 1][j + 1] * dot(neighborColor, float3(0.299, 0.587, 0.114));
+        }
+    }
+
+
+    float gradient = sqrt(gx * gx + gy * gy);
+    //float4 edgeColor = float4(1.0, 1.0, 1.0, 1.0) * gradient;
+
+    if (gradient > weight)
+    {
+        ResultTexture[texCoord] = float4(1.0, 1.0, 1.0, 1.0)* gradient; // Outline color
+    }
+    else
+    {
+        ResultTexture[texCoord] = float4(0, 0, 0, 0); // Transparent
+    }
+
+    //ResultTexture[texCoord] = edgeColor;
+}
+
+
+
+//#pragma kernel CSMain
+//
+//RWTexture2D<float4> InputTexture;
+//RWTexture2D<float4> ResultTexture;
+//
+//[numthreads(8, 8, 1)]
+//void CSMain(uint3 id : SV_DispatchThreadID) {
+//	int2 texCoord = int2(id.xy);
+//	
+//
+//	float4 topLeft = InputTexture[texCoord + int2(-1, -1)];
+//	float4 topCenter = InputTexture[texCoord + int2(0, -1)];
+//	float4 topRight = InputTexture[texCoord + int2(1, -1)];
+//
+//	float4 bottomLeft = InputTexture[texCoord + int2(-1, 1)];
+//	float4 bottomCenter = InputTexture[texCoord + int2(0, 1)];
+//	float4 bottomRight = InputTexture[texCoord + int2(1, 1)];
+//
+//	float4 centerLeft = InputTexture[texCoord + int2(-1, 0)];
+//	float4 centerRight = InputTexture[texCoord + int2(1, 0)];
+//
+//	float4 gx = -topLeft - 2 * centerLeft - bottomLeft + topRight + 2 * centerRight + bottomRight;
+//	float4 gy = -topLeft - 2 * topCenter - topRight + bottomLeft + 2 * bottomCenter + bottomRight;
+//
+//	float3 gradient = sqrt(gx.rgb * gx.rgb + gy.rgb * gy.rgb);
+//	float4 result = float4(gradient.rgb, 1.0); 
+//	// float4 edgeColor = float4(1.0, 1.0, 1.0, 1.0) * result;
+//
+//	ResultTexture[texCoord] = result;
+//}
+
+//#pragma kernel CSMain
+//
+//RWTexture2D<float4> InputTexture;
+//RWTexture2D<float4> ResultTexture;
+//float  weight;
+//
+//[numthreads(8, 8, 1)]
+//void CSMain(uint3 id : SV_DispatchThreadID) {
+//
+//
+//
+//    float gradientX = 0.0;
+//    float gradientY = 0.0;
+//
+//    float sobelX[3][3] = { { -1, 0, 1 },
+//                           { -2, 0, 2 },
+//                           { -1, 0, 1 } };
+//
+//    float sobelY[3][3] = { { -1, -2, -1 },
+//                           { 0,  0,  0 },
+//                           { 1,  2,  1 } };
+//
+//    for (int i = -1; i <= 1; i++) {
+//        for (int j = -1; j <= 1; j++) {
+//            float sample = InputTexture.Load(int3(id.xy + int2(i, j), 0)).r;
+//            gradientX += sample * sobelX[i + 1][j + 1];
+//            gradientY += sample * sobelY[i + 1][j + 1];
+//        }
+//    }
+//
+//    float magnitude = sqrt(gradientX * gradientX + gradientY * gradientY);
+//
+//    ResultTexture[id.xy] = (magnitude > weight) ? 1.0 : 0.0;
+//}
+
+
+

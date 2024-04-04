@@ -1,0 +1,31 @@
+#pragma kernel Spheres
+
+RWStructuredBuffer<float3> Result;
+uniform float Time;
+
+#include "Random.cginc"
+
+//[numthreads(64, 1, 1)]
+//void Spheres(uint3 id : SV_DispatchThreadID)
+//{
+//    // TODO: insert actual code here!
+//    float3 baseDir = normalize(random3d(id.x) - 0.5) * (random(id.x) * 0.9 - 0.1);
+//    float3 orthogonal = normalize(cross(baseDir, random(id.x) - 0.5)) * (random(id.x) * 0.9 + 0.1);
+//    float scaledTime = Time * 2 + random(id.x);
+//    float3 dir = baseDir * sin(scaledTime)+orthogonal * cos(scaledTime);
+//    Result[id.x] = float3(dir * 20);
+//}
+
+ //number 1
+[numthreads(64, 1, 1)]
+void Spheres(uint3 id : SV_DispatchThreadID)
+{
+    // TODO: insert actual code here!
+    float3 baseDir = normalize(random3d(id.x) - 0.5) * (random(id.x) * 0.9 - 0.1);
+    float3 orthogonal = normalize(cross(baseDir, random(id.x) - 0.5)) * (random(id.x) * 0.9 + 0.1);
+    float scaledTime = Time * 2 + random(id.x);
+    float3 dir = baseDir * sin(scaledTime); //+orthogonal * cos(scaledTime);
+    Result[id.x] = float3(dir * 20);
+}
+
+

@@ -1,0 +1,44 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+
+RWTexture2D<float4> curState;
+RWTexture2D<float4> beforState;
+RWTexture2D<float4> afterState;
+RWTexture2D<float4> obstaclesTex; 
+int2 resolution;
+float3 effect;
+float dispersion;
+
+
+[numthreads(8,8,1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{   
+    float cur_ij = curState[id.xy].x;
+    float befor_ij = beforState[id.xy].x; 
+    float cur_ip1j = curState[id.xy + uint2(1, 0)].x;
+    float cur_ijp1 = curState[id.xy + uint2(0, 1)].x;
+    float cur_im1j = curState[id.xy - uint2(1, 0)].x;
+    float cur_ijm1 = curState[id.xy - uint2(0, 1)].x;
+    float newWaveHight = cur_ij * 2 - befor_ij + 0.25 * (cur_ip1j + cur_ijp1 + cur_im1j + cur_ijm1 - 4 * cur_ij);
+    newWaveHight = newWaveHight * dispersion;
+
+    if (id.x == floor(effect.x) && id.y == floor(effect.y))
+    {
+        newWaveHight = effect.z;
+    }
+
+    if (obstaclesTex[id.xy].x == 1)
+    {
+        newWaveHight = 0;
+    }
+
+    if (obstaclesTex[id.xy].y == 1)
+    {
+        newWaveHight = 1;
+    }
+    afterState[id.xy] = float4(newWaveHight, newWaveHight, newWaveHight, 1); 
+}
+
