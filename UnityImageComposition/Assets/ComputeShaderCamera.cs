@@ -79,7 +79,7 @@ public class ComputeShaderCamera : MonoBehaviour
     }
 }
 
-[CustomEditor(typeof(ComputeShaderCamera))] // YourScript는 실제로 사용하고자 하는 스크립트 클래스로 대체해야 합니다.
+[CustomEditor(typeof(ComputeShaderCamera))] 
 public class ComputeShaderCameraEditor : Editor
 {
     public override void OnInspectorGUI()
